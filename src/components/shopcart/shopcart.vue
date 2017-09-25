@@ -6,11 +6,11 @@
                   <div class="logo" :class="{'highlight':totalCount>0,'normal':totalCount<=0}">
                       <span class="icon-shopcart"></span>
                   </div>
-                  <div class="count">
+                  <div class="count" v-show="totalCount>0">
                       {{totalCount}}
                   </div>
               </div>
-              <div class="price">
+              <div class="price" :class="{'highlight':totalPrice>0}">
                   ￥{{totalPrice}}元
               </div>
               <div class="desc">
@@ -18,8 +18,8 @@
               </div>
           </div>
           <div class="content-right">
-              <div class="pay">
-                  ￥{{minPrice}}元起送
+              <div class="pay" :class="payClass">
+                  {{payDesc}}
               </div>
           </div>
       </div>
@@ -63,6 +63,23 @@
                      count += food.count;
                  })
                  return count;
+             },
+             payDesc () {
+                 if (this.totalPrice === 0) {
+                     return `￥${this.minPrice}元起送`;
+                 } else if (this.totalPrice < this.minPrice) {
+                     let diff = this.minPrice - this.totalPrice;
+                     return `还差￥${diff}元起送`;
+                 } else {
+                     return '去结算';
+                 }
+             },
+             payClass () {
+                 if (this.totalPrice < this.minPrice) {
+                     return 'not-enough';
+                 } else {
+                     return 'enough';
+                 }
              }
          }
     }
@@ -113,8 +130,8 @@
         background-color: #2b343c;
     }
     .shopcart .content .content-left .logo-wrapper .highlight{
-        background-image: url('./shopcart.svg');
-        background-color: #2b343c;
+        background-image: url('./shopcart_white.svg');
+        background-color: #00A0DC;
     }
     .shopcart .content .content-left .price{
         display: inline-block;
@@ -126,6 +143,9 @@
         box-sizing: border-box;
         padding-right: 12px;
         border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .shopcart .content .content-left .highlight{
+        color: #fff;
     }
     .shopcart .content .content-left .desc{
         display: inline-block;
@@ -144,7 +164,13 @@
         text-align: center;
         font-size: 12px;
         font-weight: 700;
+    }
+    .shopcart .content .content-right .pay.not-enough{
         background-color: #2b333b;
+    }
+    .shopcart .content .content-right .pay.enough{
+        background-color: #00b43c;
+        color: #fff;
     }
     .shopcart .content .content-left .logo-wrapper .count {
         position: absolute;
