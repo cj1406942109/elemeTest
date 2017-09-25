@@ -1,0 +1,15 @@
+body {
+    /* border: 1px solid #ccc; */
+    margin: 0;
+    font-family: Microsoft YaHei;
+}
+
+a {
+    text-decoration: none;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
