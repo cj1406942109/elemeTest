@@ -24,14 +24,15 @@
           </div>
       </div>
       <div class="ball-container">
-          <transition-group name="drop">
-              <div v-for="ball in balls" :key="ball.id"v-show="ball.show" class="ball">
-                
-              </div>
-              <div class="inner">
-
-              </div>
-          </transition-group>
+          <!-- <transition-group name="drop" tag="div">
+              <div v-for="ball in balls" v-bind:key="ball.toString()" v-show="ball.show" class="ball"></div>
+              <div class="inner"></div>
+          </transition-group> -->
+          <transition-group name="drop" tag="div">
+            <div v-for="ball in balls" v-bind:key="ball.toString()" class="ball" v-show="ball.show">            
+            </div>
+            <!-- <div class="inner"></div> -->
+        </transition-group>
       </div>
   </div>
 </template>
@@ -67,7 +68,8 @@
                      {show: false},
                      {show: false},
                      {show: false}
-                 ]
+                 ],
+                 items: [1, 2, 3, 4, 5, 6, 7, 8, 9]
              }
          },
          computed: {

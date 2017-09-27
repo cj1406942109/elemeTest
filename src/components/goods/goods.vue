@@ -36,7 +36,7 @@
             </li>
         </ul>
     </div>
-    <shopcart ref:shopcart :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+    <shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
 </template>
 
@@ -136,7 +136,7 @@
             shopcart, cartcontrol
         },
         events: {
-            'card.add' (target) {
+            'cart.add' (target) {
                 this._drop(target);
             }
         }

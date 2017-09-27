@@ -1,7 +1,8 @@
 <template>
   <div class="cartcontrol">
-      <div class="cart-decrease" v-show="food.count>0" @tap="decreaseCart">
-      </div>
+      <transition name="move">
+          <div class="cart-decrease" v-show="food.count>0" @tap="decreaseCart"></div>
+      </transition>
       <div class="cart-count" v-show="food.count>0">
           {{food.count}}
       </div>
@@ -21,7 +22,7 @@ export default {
       }
   },
   created () {
-      console.log(this.food);
+    //   console.log(this.food);
   },
   methods: {
       addCart: function () {
@@ -51,6 +52,7 @@ export default {
         background-position: 50% 50%;
         background-size: 16px 16px;
         background-repeat: no-repeat;
+        transition: all .3s;
     }
     .cartcontrol .cart-count {
         display: inline-block;
@@ -70,6 +72,15 @@ export default {
         background-position: 50% 50%;
         background-size: 16px 16px;
         background-repeat: no-repeat;
+    }
+
+    .move-enter-active, .move-leave-active {
+        transition: translate3d(0, 0, 0) linear;
+        opacity: 1;
+    }
+    .move-enter, .move-leave-to {
+      opacity: 0;
+      transform: translate3d(16px, 0, 0);
     }
 </style>
 
