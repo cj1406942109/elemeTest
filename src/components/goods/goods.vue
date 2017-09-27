@@ -36,7 +36,7 @@
             </li>
         </ul>
     </div>
-    <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+    <shopcart ref:shopcart :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
 </template>
 
@@ -69,6 +69,18 @@
                         return i;
                     }
                 }
+                return 0;
+            },
+            selectFoods () {
+                let foods = [];
+                this.goods.forEach(good => {
+                    good.foods.forEach(food => {
+                        if (food.count) {
+                            foods.push(food);
+                        }
+                    })
+                })
+                return foods;
             }
         },
         created () {
@@ -110,6 +122,9 @@
                     this.listHeight.push(height);
                 }
             },
+            _drop: function (target) {
+                this.$refs.shopcart.drop(target);
+            },
             selectMenu: function (index) {
                 let foodList = this.$el.getElementsByClassName('food-list-hook');
                 let el = foodList[index];
@@ -119,6 +134,11 @@
         },
         components: {
             shopcart, cartcontrol
+        },
+        events: {
+            'card.add' (target) {
+                this._drop(target);
+            }
         }
     }
 </script>
