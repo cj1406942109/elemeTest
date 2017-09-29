@@ -1,15 +1,316 @@
 <template>
   <div class="seller">
-      this is seller
+      <div class="seller-content">
+            <div class="overview">
+                <h1 class="title">{{seller.name}}</h1>
+                <div class="desc">
+                    <star :size="36" :score="seller.score"></star>
+                    <span class="text">({{seller.ratingCount}})</span>
+                    <span class="text">月售{{seller.sellCount}}单</span>
+                </div>
+                <ul class="remark">
+                    <li class="block">
+                        <h2>起送价</h2>
+                        <div class="content">
+                            <span class="stress">{{seller.minPrice}}</span>元
+                        </div>
+                    </li>
+                    <li class="block">
+                        <h2>商家配送</h2>
+                        <div class="content">
+                            <span class="stress">{{seller.deliveryPrice}}</span>元
+                        </div>
+                    </li>
+                    <li class="block">
+                        <h2>平均配送时间</h2>
+                        <div class="content">
+                            <span class="stress">{{seller.deliveryTime}}</span>分钟
+                        </div>
+                    </li>
+                </ul>
+                <div class="favorite" @click="toggleFavorite">
+                    <span class="icon-favorite" :class="{'active':favorite}"></span>
+                    <span class="text">{{favoriteText}}</span>
+                </div>
+            </div>
+            <split></split>
+            <div class="bulletin">
+                <h1 class="title">公告与活动</h1>
+                <div class="content-wrapper">
+                    <p class="content">{{seller.bulletin}}</p>
+                </div>
+                <ul v-if="seller.supports" class="supports">
+                    <li class="support-item" v-for="item in seller.supports" :key="item.id">
+                        <span class="icon" :class="iconClassMap[item.type]"></span>
+                        <span class="text">{{item.description}}</span>
+                    </li> 
+                </ul>
+            </div>
+            <split></split>
+            <div class="pics">
+                <h1 class="title">商家实景</h1>
+                <div class="pic-wrapper">
+                    <ul class="pic-list" ref="picList">
+                        <li class="pic-item" v-for="pic in seller.pics" :key="pic.id">
+                            <img :src="pic" width="120" height="90">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <split></split>
+            <div class="info">
+                <h1 class="title">商家信息</h1>
+                <ul>
+                    <li class="info-item" v-for="info in seller.infos" :key="info.id">
+                        {{info}}
+                    </li>
+                </ul>
+            </div>
+      </div>
   </div>
 </template>
 
 <script>
+    import BScroll from 'better-scroll';
+    import star from '@/components/star/star.vue';
+    import split from '@/components/split/split.vue';
+
     export default{
-        'name': 'seller'
+        props: {
+            seller: {
+
+            }
+        },
+        data () {
+            return {
+                iconClassMap: ['decrease', 'discount', 'special', 'invoice', 'guarantee'],
+                favorite: false
+            }
+        },
+        computed: {
+            favoriteText () {
+                return this.favorite ? '已收藏' : '收藏';
+            }
+        },
+        watch: {
+            seller: function () {
+                this._initScroll();
+            }
+        },
+        mounted: function () {
+            this.$nextTick(function () {
+                this._initScroll();
+
+                if (this.seller.pics) {
+                let picWidth = 120;
+                let margin = 6;
+                let width = (picWidth + margin) * this.seller.pics.length;
+                this.$refs.picList.style.width = width + 'px';
+                console.log(this.$refs.picList.style.width);
+                this.picScroll = new BScroll('.pic-wrapper', {
+                        scrollX: true
+                    })
+                }
+            });
+        },
+        methods: {
+            _initScroll () {
+                if (!this.sellerScroll) {
+                    this.sellerScroll = new BScroll('.seller', {
+                        click: true,
+                        tap: true
+                    });
+                } else {
+                    this.sellerScroll.refresh();
+                }
+            },
+            toggleFavorite () {
+                this.favorite = !this.favorite;
+            }
+        },
+        components: {
+            star, split
+        }
     }
 </script>
 
 <style scoped>
-
+    .seller {
+        position: absolute;
+        top: 174px;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        overflow: hidden;
+    }
+    .overview {
+        padding: 18px;
+    }
+    .overview .title {
+        margin-bottom: 8px;
+        line-height: 14px;
+        color: rgb(7, 17, 27);
+        font-size: 14px;
+    }
+    .overview .desc {
+        padding-bottom: 18px; 
+        border-bottom: 1px solid rgba(7, 17, 27, 0.1);
+        font-size: 0;
+    }
+    .overview .desc .star {
+        display: inline-block;
+        margin-right: 8px;
+        vertical-align: top;        
+    }
+    .overview .desc .text {
+        line-height: 18px;
+        margin-right: 12px;
+        display: inline-block;
+        vertical-align: top;        
+        font-size: 10px;
+        color: rgb(77, 85, 93);
+    }
+    .remark {
+        display: flex;
+        padding-top: 18px;        
+    }
+    .remark .block {
+        flex: 1;
+        text-align: center;
+        border-right: 1px solid rgba(7, 17, 27, 0.1);
+    }
+    .remark .block:last-child {
+        border-right: none;
+    }
+    .remark .block h2{
+        line-height: 10px;
+        font-size: 10px;
+        margin-bottom: 4px;    
+    }
+    .remark .block .content {
+        line-height: 24px;
+        color: rgb(7, 17, 27);
+        font-size: 10px;        
+    }
+    .remark .block .content .stress {
+        font-size: 24px;
+    }
+    .favorite {
+        position: absolute;
+        width: 50px;
+        right: 18px;
+        top: 18px;
+        text-align: center;
+    }
+    .favorite .icon-favorite {
+        margin: 0 auto;
+        width: 24px;
+        height: 24px;
+        display: block;
+        background-image: url( ./favorite.svg);
+        background-size: 24px 24px;
+    }
+    .favorite .icon-favorite.active {
+        background-image: url(./favorite_red.svg);
+    }
+    .favorite .text {
+        font-size: 10px;
+        line-height: 10px;
+        color: rgb(77, 85, 93);
+    }
+    .bulletin {
+        padding: 18px 18px 0 18px;
+    }
+    .bulletin .title {
+        margin-bottom: 8px;
+        line-height: 14px;
+        color: rgb(7, 17, 27);
+        font-size: 14px;
+    }
+    .bulletin .content-wrapper {
+        padding: 0 12px 16px 12px;
+        border-bottom: 1px solid rgba(7, 17, 27, 0.1);
+    }
+    .bulletin .content-wrapper .content {
+        line-height: 24px;
+        font-size: 12px;
+        color: rgb(240, 20, 20);
+    }   
+    .supports .support-item {
+        padding: 16px 12px;
+        font-size: 0;
+        border-bottom: 1px solid rgba(7, 17, 27, 0.1);
+    }
+    .supports .support-item:last-child {
+        border-bottom: none;
+    }
+    .support-item .icon {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        vertical-align: top;
+        margin-right: 6px;
+        background-size: 16px 16px;
+        background-repeat: no-repeat;
+    }
+    .support-item .icon.decrease {
+        background-image: url('./decrease_4@2x.png');
+    }
+    .support-item .icon.discount {
+        background-image: url('./discount_4@2x.png');
+    }
+    .support-item .icon.special{
+        background-image: url('./special_4@2x.png');
+    }
+    .support-item .icon.invoice {
+        background-image: url('./invoice_4@2x.png');
+    }
+    .support-item .icon.guarantee {
+        background-image: url('./guarantee_4@2x.png');
+    }
+    .support-item .text {
+        line-height: 16px;
+        font-size: 12px;
+        color: rgb(7, 17, 27);
+    }
+    .pics {
+         padding: 18px;         
+    }
+    .pics .title {
+        margin-bottom: 12px;
+        line-height: 14px;
+        color: rgb(7, 17, 27);
+        font-size: 14px;
+    }
+    .pic-wrapper {
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .pic-wrapper .pic-list .pic-item{
+        display: inline-block;
+        margin-right: 6px;
+        font-size: 0;
+        width: 120px;
+        height: 90px;
+    }
+    .info {
+        padding: 18px 18px 0 18px;
+    }
+    .info .title {
+        padding-bottom: 12px;
+        line-height: 14px;
+        color: rgb(7, 17, 27);
+        font-size: 14px;
+        border-bottom: 1px solid rgba(7, 17, 27, 0.1);
+    }
+    .info .info-item {
+        padding: 16px 12px;
+        font-size: 12px;
+        line-height: 16px;
+        border-bottom: 1px solid rgba(7, 17, 27, 0.1);
+    }
+    .info .info-item:last-child {
+        border-bottom: none;
+    }
 </style>

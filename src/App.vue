@@ -4,7 +4,9 @@
     <v-header :seller="seller"></v-header>
     <v-tab></v-tab>
     <transition>
-      <router-view :seller="seller"></router-view>
+      <keep-alive>
+        <router-view :seller="seller"></router-view>
+      </keep-alive>
     </transition>
     <v-footer></v-footer>
   </div>
