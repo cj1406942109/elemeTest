@@ -31,7 +31,24 @@
                 <split></split>
                 <div class="rating">
                     <h1 class="title">商品评价</h1>
-                    <ratingselect :select-type="selectType" :only-content="onlyContent" :ratings="food.ratings" :desc="desc"></ratingselect>
+                    <ratingselect v-on:ratingtype:select="selectRatingType" v-on:content:toggle="toggleContent" :select-type="selectType" :only-content="onlyContent" :ratings="food.ratings" :desc="desc"></ratingselect>
+                    <div class="rating-wrapper">
+                        <ul v-show="food.ratings && food.ratings.length">
+                            <li v-show="needShow(rating.rateType, rating.text)" v-for="rating in food.ratings" :key="rating.id" class="rating-item">
+                                <div class="user">
+                                    <span class="name">{{rating .username}}</span>
+                                    <img  class="avatar" :src="rating.avatar" width="12" height="12">
+                                </div>
+                                <div class="time">{{rating.rateTime | formDate}}</div>
+                                <p class="text">
+                                    <span :class="{'icon-thumb_up':rating.rateType===0,'icon-thumb_down':rating.rateType===1}"></span>{{rating.text}}
+                                </p>
+                            </li>
+                        </ul>
+                        <div class="no-rating" v-show="!food.ratings || !food.ratings.length">
+                            暂无评价
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -44,7 +61,9 @@
     import cartcontrol from '@/components/cartcontrol/cartcontrol.vue';
     import split from '@/components/split/split.vue';
     import ratingselect from '@/components/ratingselect/ratingselect.vue';
-
+    import {formatDate} from '@/assets/js/date';
+    // const POSITIVE = 0;
+    // const NEGATIVE = 1;
     const ALL = 2;
 
     export default {
@@ -68,8 +87,6 @@
         methods: {
             show: function () {
                 this.showFlag = true;
-                this.selectType = ALL;
-                this.onlyContent = true;
 
                 this.$nextTick(() => {
                     if (!this.contentScroll) {
@@ -85,6 +102,34 @@
             },
             addFirst: function () {
                 Vue.set(this.food, 'count', 1);
+            },
+            needShow (type, text) {
+                if (this.onlyContent && !text) {
+                    return false;
+                }
+                if (this.selectType === ALL) {
+                    return true;
+                } else {
+                    return type === this.selectType;
+                }
+            },
+            selectRatingType (type) {
+                this.selectType = type;
+                this.$nextTick(() => {
+                    this.contentScroll.refresh();
+                });
+            },
+            toggleContent (onlyContent) {
+                this.onlyContent = onlyContent;
+                this.$nextTick(() => {
+                    this.contentScroll.refresh();
+                });
+            }
+        },
+        filters: {
+            formDate (time) {
+                let date = new Date(time);
+                return formatDate(date, 'yyyy-MM-dd hh:mm');
             }
         },
         components: {
@@ -216,13 +261,76 @@
         color: rgb(77, 85, 93);
     }
     .rating {
-        padding: 18px;
+        padding: 0;
     }
     .rating .title {
         line-height: 14px;
+        padding: 0 18px;
         margin: 0;
         font-size: 14px;
         color: rgb(7, 17, 27);
+    }
+    .rating-wrapper {
+        padding:  0 18px;
+    }
+    .rating-wrapper .rating-item {
+        position: relative;
+        padding:  16px 0;
+        border-bottom: 1px solid rgba(7, 17, 27, 0.1);
+    }
+    .rating-wrapper .user {
+        position: absolute;
+        right: 0;
+        top: 16px;
+        font-size: 0;
+        line-height: 12px;        
+    }
+    .rating-wrapper .user .name {
+        font-size: 10px;
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 6px;
+        color: rgb(147, 153, 159);
+    }
+    .rating-wrapper .user .avatar {
+        border-radius: 50%;
+    }
+    .rating-wrapper .time {
+        line-height: 12px;
+        font-size: 10px;
+        color: rgb(147, 153, 159);
+    }
+    .rating-wrapper .text {
+        line-height: 16px;
+        font-size: 12px;        
+        color: rgb(7, 17, 27);
+    }
+    .rating-wrapper .text .icon-thumb_up {
+        display: inline-block;
+        vertical-align: middle;
+        width: 24px;
+        height: 24px;
+        background-image: url(./thumb_up.svg);
+        background-size: 20px 20px;
+        background-position: -2px -2px;
+        background-repeat: no-repeat;
+        margin-right: 4px;
+    }
+    .rating-wrapper .text .icon-thumb_down {
+        display: inline-block;
+        vertical-align: middle;
+        width: 24px;
+        height: 24px;
+        background-image: url(./thumb_down.svg);
+        background-size: 20px 20px;
+        background-position: -2px -2px;
+        background-repeat: no-repeat;
+        margin-right: 4px;
+    }
+    .no-rating {
+        padding: 16px 0;
+        font-size: 12px;
+        color: rgb(147, 153, 159);
     }
 </style>
 
